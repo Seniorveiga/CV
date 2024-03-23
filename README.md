@@ -10,5 +10,5 @@ The company Pens And Printers had a problem with their customer focus, so I anal
 * I used hypothesis tests and ANOVA tests to determine the best way to deploy offers and product sales in the company.
 
 ## Overview of results to present for *Pens and Printers* 
-![](https://github.com/Seniorveiga/Pens_and_printers/blob/main/Practical%20case%20Pens%20and%20printers.pdf)
+![Presentation.png](https://github.com/Seniorveiga/Pens_and_printers/blob/main/Practical%20case%20Pens%20and%20printers.pdf)
 
