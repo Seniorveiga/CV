@@ -1,6 +1,6 @@
 # Project for my Data Analyst in Python certification
 
-## [Project: Pens and Printers Data Analysis on Sales] (https://github.com/Seniorveiga/Pens_and_printers/blob/main/Workspace/pens_and_printers_case_study.ipynb)
+## [Project: Pens and Printers Data Analysis on Sales](https://github.com/Seniorveiga/Pens_and_printers/blob/main/Workspace/pens_and_printers_case_study.ipynb)
 
 The company Pens And Printers had a problem with their customer focus, so I analyze the projects oriented to brainstorming.
 * Data was taken from the "product_sles.csv" archive.
