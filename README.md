@@ -9,6 +9,8 @@ The company Pens And Printers had a problem with their customer focus, so I anal
 * With pandas I performed both the Exploratory Data Analysis and the import & cleaning data processes.
 * I used hypothesis tests and ANOVA tests to determine the best way to deploy offers and product sales in the company.
 
+![](https://github.com/Seniorveiga/Python_Projects/blob/main/Pens%20and%20Printers/Presentation.png)
+
 ## [Project: The hypothesis testing Bible](https://github.com/Seniorveiga/Python_Projects/tree/main/Hypothesis%20Testing%20Bible)
 
 I have prepared this document in order to help my colleagues with the concept of *hypothesis testing* with some Notebooks. I already have studied this concept during my degree and I master it in my third year so I thought I could help them!
