@@ -1,30 +1,30 @@
 ---
-title: "Caso práctico módulo 3"
+title: "Analysis of a wrong lineal model in university teacher´s salaries."
 output: html_notebook
 ---
 
 # Enunciado
 
-Se toma el dataset *“Salaries.csv”*. El conjunto de datos está formado por los salarios de nueve meses recogidos de 397 profesores universitarios en Estados Unidos durante 2008 y 2009. Además de los salarios, también se recogieron el rango del profesor, el sexo, la disciplina, los años desde el doctorado y los años de servicio.
+The dataset *"Salaries.csv "* is taken. The dataset consists of nine months' salaries collected from 397 university professors in the United States during 2008 and 2009. In addition to salaries, the professor's rank, gender, discipline, years since Ph.D., and years of service were also collected.
 
-El objetivo de esta práctica consiste en realizar un estudio íntegro del dataset para terminar implementando un modelo lineal regularizado que realice predicciones sobre el salario para percibir de un profesor. Asimismo, se pedirá aprovechar la explicabilidad de estos modelos y los estudios estadísticos realizados para arrojar intuiciones y dependencias en los datos.
+The objective of this internship is to perform a full study of the dataset in order to implement a regularized linear model that makes predictions about a professor's salary to be received. Also, it will be asked to take advantage of the explainability of these models and the statistical studies performed to yield intuitions and dependencies in the data.
 
-Información sobre las columnas:
+Information about the columns:
 
-1.  **rank**: Categórica - de profesor asistente, profesor asociado o catedrático
-2.  **discipline**: Categórica - Tipo de departamento en el que trabaja el profesor, ya sea aplicado (B) o teórico (A)
-3.  **yrs.since.phd**: Continuo - Número de años desde que el profesor obtuvo su doctorado
-4.  **yrs.service**: Continuo - Número de años que el profesor ha prestado servicio al departamento y/o a la universidad
-5.  **sex**: Categórico - Sexo del profesor, hombre o mujer
-6.  **salary**: Continuo - Sueldo de nueve meses del profesor (USD)
+1.  **rank**: Categorical - from assistant professor, associate professor or full professor
+2.  **discipline**: Categorical - Type of department in which the professor works, either applied (B) or theoretical (A)
+3.  **yrs.since.phd**: Continuous - Number of years since the professor earned his/her Ph.D.
+4.  **yrs.service**: Continuous - Number of years the professor has served the department and/or the university.
+5.  **sex**: Categorical - Sex of the professor, male or female
+6.  **salary**: Continuous - Professor's nine-month salary (USD)
 
-# Ejercicios
+# Section
 
-## Ejercicio 1
+## Section 1
 
-1 - Cargar los datos. Realizar una inspección por variables de la distribución de salarios en función de cada atributo visualmente. Realizar las observaciones pertinentes. ¿Qué variables son mejores para separar los datos?
+1 - Load data. Perform a visual inspection of the distribution of salaries by variables for each attribute. Which variables are best to separate the data?
 
-En primer lugar, cargamos los datos en una variable que identifica el DataFrame:
+First, we load the data into a variable that identifies the DataFrame:
 
 ```{r}
 df_prof <- read.csv("Salaries.csv")
@@ -32,9 +32,9 @@ head(df_prof)
 str(df_prof)
 ```
 
-Nos pide que realicemos una distribución de salarios dependiendo de cada atributo. Esto equivale a hacer un Facet grid de cada una de las categorías.
+It asks us to perform a salary distribution depending on each attribute. This is equivalent to make a Facet grid for each of the categories.
 
-Vamos a ver si todas las variables se encuentran en disposición de poder graficarse, que habría que convertirlas a tipo *"factor"*:
+Let's see if all the variables are ready to be plotted, which should be converted to *"factor "* type:
 
 ```{r}
 library(dplyr)   #Importamos dplyr para usar la función "count" de este paquete.
@@ -45,17 +45,17 @@ count(df_prof,yrs.since.phd, sort = TRUE)
 
 ```
 
-Como vemos, algunas de ellas son de tipo *"char"* luego habría que transformarlas para poder graficarlas.
+As we can see, some of them are of type *"char "* then they would have to be transformed to be able to plot them.
 
 ```{r}
 df_prof$rank <- as.factor(df_prof$rank)
 ```
 
-### Gráficas
+### Graphics
 
-Importamos *"ggplot2"* y luego realizamos las distintas gráficas.
+We import *"ggplot2"* and then make the various plots.
 
-Empleamos argumentos nuevos basándonos en la siguiente documentación de *ggplot*: <https://www.rdocumentation.org/packages/ggplot2/versions/0.9.1/topics/geom_histogram>
+We use new arguments based on the following *ggplot* documentation: <https://www.rdocumentation.org/packages/ggplot2/versions/0.9.1/topics/geom_histogram>
 
 ```{r}
 salaries_rank <-ggplot(data = df_prof, aes(x = salary, fill = rank))
@@ -75,55 +75,55 @@ salaries_sex + geom_histogram(binwidth = 10000, color = "black")  + ggtitle("Pro
 
 ```
 
-### Test de hipótesis
+### Hypothesis tests
 
-Podemos ver a ojo que hay variables que destacan unas más que otras:
+We can see by eye that there are variables that stand out more than others:
 
--   Podemos ver que hay variables que no van a tener prácticamente ningún peso como el **sexo**. Aunque a simple vista pueda parecer que los hombres ganan más que las mujeres, para llegar a conclusiones estadísticas sólidas sobre los géneros necesitaríamos una muestra mayor de mujeres pues contamos con muy pocos elementos de este géneros.
+-   We can see that there are variables that are going to have virtually no weight such as **sex**. Although at first glance it may seem that men earn more than women, to reach solid statistical conclusions about gender we would need a larger sample of women because we have very few elements of this gender.
 
 ```{r}
 count(df_prof, sex)
 ```
 
-Veremos más sobre esta variable en el ejercicio 2.
+We will see more about this variable in exercise 2.
 
--   Respecto a la variable *discipline*, pongo en duda que nos vaya a servir para crear diferencias en los salarios. Si nos fijamos, parece que en ambos casos se está siguiendo una distribución similar o por lo menos sus medias son muy similares.
+-   Regarding the *discipline* variable, I doubt that it will help us to create differences in salaries. If we look at it, it seems that in both cases they are following a similar distribution or at least their means are very similar.
 
-En consonancia con lo que hemos visto en este tema, calculamos sus medias y podemos hacer un test de hipótesis para ver si coinciden. Podemos hacer dos test que son apropiados para esta situación:
+In line with what we have seen in this topic, we calculate their means and we can do a hypothesis test to see if they match. We can do two tests that are appropriate for this situation:
 
-\- Test $\mathit{t}$ de Student: Nos dice si las medias de ambas poblaciones son de forma significativa iguales.
+-   Student's $\mathit{t}$ test: it tells us whether the means of both populations are significantly the same.
 
-\- Test de Kolmogorov-Smirnov: Nos permite ver si ambas muestras siguen la misma distribución.
+-   Kolmogorov-Smirnov test: It allows us to see if both samples follow the same distribution.
 
-**Muy importante**: Como estamos ante una muestra que no tiene un componente de aleatoriedad, ¡NO podemos aplicar el ***Teorema Central del límite*** y asegurar que se aproxima a una distribución normal! (Nótese que las muestras en *discipline = A* y *discipline = B* son mayores que 30 que es la condición usual pero no se cumplen otras). Sin embargo, lo vamos a comprobar a través del test de Shapiro-Wilk.
+**Very important**: Since we are dealing with a sample that does not have a random component, we can NOT apply the ***Central Limit Theorem*** and ensure that it approximates a normal distribution! (Note that the samples in *discipline = A* and *discipline = B* are greater than 30 which is the usual condition but no others are satisfied). However, we will check this through the Shapiro-Wilk test.
 
-Además, al ser una cuestión salarial suele haber rangos y categorías unas mayores que otras, por lo que podemos intuir que no es normal.
+In addition, as it is a matter of salary, there are usually ranks and categories, some higher than others, so we can guess that it is not normal.
 
-Disciplina A:
+Discipline A:
 
--   $H_{0}$: La disciplina A sigue una distribución normal.
--   $H_{1}$: La disciplina A no sigue una distribución normal.
+-   $H_{0}$: Discipline A follows a normal distribution.
+-   $H_{1}$: Discipline A does not follow a normal distribution.
 
-Nivel de significación $\alpha$=0.05.
+Significance level $\alpha$=0.05.
 
 ```{r}
 shapiro.test(df_prof$salary[df_prof$discipline == "A"])
 ```
 
-Si lo hacemos en la disciplina B:
+If we do it in discipline B:
 
--   $H_{0}$: La disciplina B sigue una distribución normal.
--   $H_{1}$: La disciplina B no sigue una distribución normal.
+-   $H_{0}$: Discipline B follows a normal distribution.
+-   $H_{1}$: Discipline B does not follow a normal distribution.
 
-Nivel de significación $\alpha$=0.05.
+Significance level $\alpha$=0.05.
 
 ```{r}
 shapiro.test(df_prof$salary[df_prof$discipline == "B"])
 ```
 
-Vemos que en ambos casos el $\mathit{p}$-valor es menor que 0.05 por lo que **no se considera que siga una distribución normal**. Esto descarta también el uso del test $\mathit{t}$ de Student porque no contamos con las condiciones para aplicarlo (Los datos no siguen una distribución normal)
+We see that in both cases the $\mathit{p}$-value is less than 0.05 so **is not considered to follow a normal distribution**. This also rules out the use of the Student's $\mathit{t}$-test because we do not have the conditions to apply it (The data do not follow a normal distribution).
 
-Al menos, podemos calcular la media y la desviación estándar para ver cúanto difieren en ambos grupos:
+At the very least, we can calculate the mean and standard deviation to see how much the two groups differ:
 
 ```{r}
 mean(df_prof$salary[df_prof$discipline=="A"])
@@ -133,7 +133,7 @@ sqrt(var(df_prof$salary[df_prof$discipline=="A"]))
 sqrt(var(df_prof$salary[df_prof$discipline=="B"]))
 ```
 
-Vemos que las diferencias que hay entre uno y otro no son especialmente grandes y más teniendo en cuenta la desviación estándar. Podría tener alguna repercusión debido a la diferencia de medias pero ya está. Seguramente las otras variables tengan más peso.
+We can see that the differences between one and the other are not particularly large, especially considering the standard deviation. It could have some impact due to the difference in means, but that is all. Surely the other variables have more weight.
 
 ```{r}
 salaries_phd <-ggplot(data = df_prof, aes(x = salary, y = yrs.since.phd))
@@ -149,13 +149,13 @@ cor_phd
 cor_yrs
 ```
 
-Podemos ver que existe una correlación moderada en ambas variables, tanto en el tiempo que lleva como doctor como la de años de experiencia que lleva detrás, siendo los años como doctor la que más repercute aunque por una ligera diferencia.
+We can see that there is a moderate correlation in both variables, both in the time as a doctor and the years of experience behind, with the years as a doctor having the greatest impact, although by a slight difference.
 
-Finalmente, respecto al rango del profesor, podemos realizar otro tipo de test, el **Kruskal-Wallis**, pues nos permite comparar las categorías una a una para ver si hay diferencias estadísticamente significativas.
+Finally, with respect to the rank of the professor, we can perform another type of test, the **Kruskal-Wallis**, as it allows us to compare the categories one by one to see if there are statistically significant differences.
 
-**Muy importante**: Nótese que al venir de una distribución que no sigue una normal no podemos hacer el test **Anova** ni su versión **Pairwise**.
+**Very important**: Note that coming from a distribution that does not follow a normal distribution, we cannot perform the **Anova** test or its **Pairwise** version.
 
-Previsualizamos los valores:
+Previsualizing the values:
 
 ```{r}
 
@@ -165,9 +165,9 @@ Previsualizamos los valores:
 kruskal.test(salary ~ rank, data = df_prof)
 ```
 
-Como el $\mathit{p}$-valor es menor que el nivel de significancia $\alpha$ = 0.05, entonces llegamos a que se rechaza $H_{0}$ y por tanto aceptamos $H_{1}$ que nos dice que hay diferencias estadisticas significativas entre los tres grupos.
+Since the $\mathit{p}$-value is less than the significance level $\alpha$ = 0.05, then we arrive at rejecting $H_{0}$ and therefore accept $H_{1}$ which tells us that there are statistically significant differences between the three groups.
 
-Por ver cuáles son esos grupos, hacemos un *Wilcoxon*:
+To see what those groups are, we do a *Wilcoxon*:
 
 ```{r}
 help(pairwise.wilcox.test) #Usualmente empleo Bonferroni así que uso ese ajuste
@@ -178,96 +178,96 @@ pairwise.wilcox.test(df_prof$salary, df_prof$rank,
                  p.adjust.method = "bonferroni")
 ```
 
-Los tres grupos son significativamente MUY diferentes unos de otros, y dado su nivel de significación, es claro que influye en el salario final del profesor.
+The three groups are significantly VERY different from each other, and given their level of significance, it is clear that they influence the teacher's final salary.
 
-Por tanto, las variables que considero influyentes, de mayor a menor son:
+Therefore, the variables that I consider influential, from highest to lowest are:
 
-\- Rank (p-valor muy marcado)
+-   Rank (highly marked p-value)
 
-\- yrs.since.phd
+-   yrs.since.phd
 
-\- yrs.service
+-   yrs.service
 
-Mientras que las que tienen poca o ninguna influencia son:
+While those with little or no influence are:
 
-\- discipline (Medias dentro de el error estándar y errores estándar similares)
+-   discipline (Means within the standard error and similar standard errors).
 
-\- sex (no hay suficientes muestras)
+-   sex (not enough samples)
 
-## Ejercicio 2
+## Section 2
 
-2 - ¿Se puede emplear un test paramétrico para determinar si las medias de salarios entre hombres y mujeres son las mismas o difieren? Hay que tener que, en tanto que se pide usar un test paramétrico, se deberá determinar si las muestras cumplen con las hipótesis necesarias.
+2 - Is it possible to use a parametric test to determine whether the mean wages between men and women are the same or different? It should be borne in mind that, as long as a parametric test is requested, it must be determined whether the samples meet the necessary hypotheses.
 
-Para que se pueda realizar un test paramétrico, se tiene que cumplir que los datos con los que trabajamos deben de seguir una distribución normal. Esto se puede comprobar, realizando en estos subgrupos al igual que hemos hecho con la variable discilina, realizando un test de Shapiro-Wilk en cada uno de ellos.
+For a parametric test to be performed, it must be fulfilled that the data we are working with must follow a normal distribution. This can be checked by performing a Shapiro-Wilk test on each of these subgroups, as we have done with the discipline variable.
 
-Veamos si siguen una distribución normal. Nuestro test de hipótesis tiene las dos siguientes hipótesis:
+Let's see if they follow a normal distribution. Our hypothesis test has the following two hypotheses:
 
--   $H_{0}$: Los salarios de los hombres siguen una distribución normal.
--   $H_{1}$: Los salarios de los hombres no siguen una distribución normal.
+-   $H_{0}$: Men's wages follow a normal distribution.
+-   $H_{1}$: Men's wages do not follow a normal distribution.
 
-Con un nivel de significación $\alpha$ = 0.01
+With a significance level $\alpha$ = 0.01
 
 ```{r}
 shapiro.test(df_prof$salary[df_prof$sex == "Male"])
 ```
 
-Como tenemos que el $\mathit{p}$-valor es menor que $\alpha$, entonces descartamos la hipótesis nula y llegamos a la conclusión de que no siguen una distribución normal con un 99% de significancia.
+Since we have that the $\mathit{p}$-value is less than $\alpha$, then we discard the null hypothesis and conclude that they do not follow a normal distribution with 99% significance.
 
-En el caso del grupo de las mujeres:
+In the case of the female group:
 
--   $H_{0}$: Los salarios de las mujeres siguen una distribución normal.
--   $H_{1}$: Los salarios de las mujeres no siguen una distribución normal.
+-   $H_{0}$: Women's wages follow a normal distribution.
+-   $H_{1}$: Women's wages do not follow a normal distribution.
 
-Con un nivel de significación $\alpha$ = 0.01
+With a significance level of $H_{1}$\$ = 0.01
 
 ```{r}
 shapiro.test(df_prof$salary[df_prof$sex == "Female"])
 ```
 
-Sí que podríamos decir que siguen una distribución normal, pero rechazamos el test por muy poco.
+We could say that they follow a normal distribution, but we reject the test by a very small margin.
 
-Pese a que el grupo de las chicas sí que supera el test no podemos comparar ambos grupos porque no se da la condición de normalidad para comparar las medias (test $\mathit{t}$ de Student).
+Although the girls' group does pass the test, we cannot compare the two groups because the normality condition for comparing means (Student's $\mathit{t}$ test) is not met.
 
-Sin embargo, podemos usar el **test de Wilcoxon-Man-Whitney** en tanto que no son paramétricas, y es la alternativa al test $\mathit{t}$ de Student.
+However, we can use the **Wilcoxon-Man-Whitney test** as they are non-parametric, and it is the alternative to Student's $\mathit{t}$ test.
 
-Hipótesis:
+Hypothesis:
 
--   $H_{0}$: Los salarios de las mujeres y hombres son estadísticamente iguales.
--   $H_{1}$: Los salarios de las mujere y los hombres son diferentes de forma significativa.
+-   $H_{0}$: Women's and men's wages are statistically equal.
+-   $H_{1}$: Women's and men's wages are significantly different.
 
-Con un nivel de significación $\alpha$ = 0.05.
+With a significance level of $\alpha$ = 0.05.
 
 ```{r}
 wilcox.test(df_prof$salary[df_prof$sex == "Female"], df_prof$salary[df_prof$sex == "Male"])
 ```
 
-Como el $\mathit{p}$-valor es lo suficientemente pequeño, se considera que son diferentes de forma significativa, pero el test, de nuevo, no tiene una seguridad muy sólida pues es cercano al $\mathit{p}$-valor.
+Since the $\mathit{p}$-value is small enough, they are considered to be significantly different, but the test, again, does not have a very robust security as it is close to the $\mathit{p}$-value.
 
 ```{r}
 mean(df_prof$salary[df_prof$sex == "Female"])
 mean(df_prof$salary[df_prof$sex == "Male"])
 ```
 
-Concluimos que son diferentes, ligeramente mayores en el hombre pero lo ideal sería tener más muestras de profesores que sean mujeres, pues sólo hay 39.
+We conclude that they are different, slightly higher in men but ideally we would like to have more samples of teachers who are women, as there are only 39.
 
-## Ejercicio 3
+## Section 3
 
-3 - Dividir el dataset tomando las primeras 317 instancias como train y las últimas 80 como test. Entrenar un modelo de regresión lineal con regularización Ridge y Lasso en train seleccionando el que mejor MSE tenga. Dar las métricas en test. Valorar el uso del one hot encoder, y, en caso de emplearlo, argumentarlo.
+3 - Split the dataset taking the first 317 instances as train and the last 80 as test. Train a linear regression model with Ridge and Lasso regularization on train selecting the one with the best MSE. Give the metrics in test. To evaluate the use of the one hot encoder, and, if used, to argue it.
 
-En primer lugar, vemos si se debe de utilizar el One-Hot Encoder. Usarlo es importante porque en modelos de predicción se emplean números y podemos generar variables booleanas que indiquen diferentes categorías. En este caso **Se debe de implementar el One Hot Encoder** puesto que tenemos tres variables que nos pueden dar problemas:
+First of all, we see if the One-Hot Encoder should be used. Using it is important because in prediction models numbers are used and we can generate Boolean variables that indicate different categories. In this case **One Hot Encoder** should be implemented since we have three variables that can give us problems:
 
-- La columna "sex".
-- La columna "rank".
-- La columna "service".
+-   The "sex" column.
+-   The "rank" column.
+-   The column "service".
 
 ```{r}
 df_profOHE <- model.matrix(salary~.-1,df_prof)
 head(df_profOHE)
 ```
 
-Realizamos la división del dataset en dos conjuntos. Lo que tenemos que predecir, de nuevo, es el salario por lo que hay que aislar la variable *"salary"* y ponerla en dos subconjuntos de 317 y 80 elementos.
+We divide the dataset into two sets. What we have to predict, again, is the salary so we have to isolate the variable *"salary "* and put it in two subsets of 317 and 80 elements.
 
-**Importante**: En el conjunto de datos X tomamos a partir de la columna 2 porque la primera, que está incluida en el DataFrame es una columna con las posiciones de las filas, y por tanto no nos dan ninguna información relevante.
+**Important**: In the data set X we take from column 2 because the first one, which is included in the DataFrame is a column with the positions of the rows, and therefore does not give us any relevant information.
 
 ```{r}
 df_prof_X <- data.matrix(df_profOHE[,2:8]) #Tomamos columnas 2 a 6, evitando "index"
@@ -277,7 +277,7 @@ df_prof_y <- data.matrix(df_prof$salary) #Variable objetivo
 # df_prof_y
 ```
 
-**Ojo, hemos tomado los salarios del DataFrame que no contiene el One Hot Encoder**.
+**Note that we have taken the salaries of the DataFrame that does not contain the One Hot Encoder**.
 
 ```{r}
 df_prof_X_train <- df_prof_X[1:318,]  #No cuenta el último elemento
@@ -287,11 +287,11 @@ df_prof_y_train <- df_prof_y[1:318,]
 df_prof_y_test <- df_prof_y[318:397,]
 ```
 
-Se nos pide realizar un entrenamiento de un GLM, que puede emplear tanto Ridge como Lasso. Como se trata de una regresión lineal y no logística, empleamos la medida MSE y cargamos la librería *glmnet*. Si queremos aplicar un modelo Ridge, al ser un caso mayor de un GLM, deberíamos especificar un $\alpha$ de 0.
+We are asked to train a GLM, which can use either Ridge or Lasso. Since this is a linear, non-logistic regression, we use the MSE measure and load the *glmnet* library. If we want to apply a Ridge model, being a higher case of a GLM, we should specify an \$alpha of 0.
 
-**Importante** cuando hacemos una regularización, se trata de un tipo de **cross-validation** por lo que hay que ponerle el prefijo cv delante. También importante notar que la función **cv.glmnet** sólo acepta matrices como posibles valores de entrada.
+**Important** when we do a regularization, it is a type of **cross-validation** so we have to prefix it with cv. Also important to note that the **cv.glmnet** function only accepts arrays as possible input values.
 
-### Regularización Ridge
+### Ridge regularization
 
 ```{r}
 library(glmnet)
@@ -309,13 +309,16 @@ cv.prof_ridge$lambda.min
 # Error esperado para este lambda mínimo
 min(cv.prof_ridge$cvm)
 ```
-Vemos que el error es muy grande.
 
-Si vemos sus coeficientes:
+We see that the error is very large.
+
+If we look at its coefficients:
+
 ```{r}
 coef(cv.prof_ridge, s=cv.prof_ridge$lambda.min)
 ```
-Y tratamos de hacer una predicción:
+
+And we try to make a prediction:
 
 ```{r}
 print("Valores predichos por la regresion lineal con Regularización Ridge: 5 primeros valores")
@@ -323,9 +326,10 @@ predict.glmnet(cv.prof_ridge$glmnet.fit, newx=df_prof_X_test[1:5,], s=cv.prof_ri
 print("Valores reales")
 df_prof_y_test[1:5]    #Nótese que ya no es una matriz sino un array
 ```
-### Regularización Lasso
 
-El procedimiento es el mismo pero como trabajamos con GLM tenemos que cambiar el parámetro a $\alpha$ = 1.
+### Lasso regularization
+
+The procedure is the same but as we work with GLM we have to change the parameter to $\alpha$ = 1.
 
 ```{r}
 set.seed(1)
@@ -341,23 +345,28 @@ cv.prof_lasso$lambda.min
 # Error esperado para este lambda mínimo
 min(cv.prof_lasso$cvm)
 ```
-De nuevo, vuelve a salir que tiene un error muy grande, 585488782.
 
-Si vemos sus coeficientes:
+Again, it comes out again that it has a very large error, 585488782.
+
+If we look at its coefficients:
+
 ```{r}
 coef(cv.prof_lasso, s=cv.prof_lasso$lambda.min)
 ```
+
 Y, de nuevo, tratamos de hacer una predicción:
+
 ```{r}
 print("Valores predichos por la regresion lineal con Regularización Lasso:  5 primeros valores")
 predict.glmnet(cv.prof_ridge$glmnet.fit, newx=df_prof_X_test[1:5,], s=cv.prof_ridge$lambda.min)
 print("Valores reales")
 df_prof_y_test[1:5]
 ```
-### ¿Qué modelo elegimos?
 
-Sabiendo que debeos quedarnos con el modelo que tenga menor MSE, vemos sus valores.
-El MSE se obtiene al elegir de la validación cruzada los errores, y de ellos el que tenga asociado el $\lambda$ mínimo.
+### Which model should we choose?
+
+Knowing that we should choose the model with the lowest MSE, we look at its values. The MSE is obtained by choosing from the cross validation the errors, and from them the one that has the minimum associated MSE.
+
 ```{r}
 mse_ridge <- cv.prof_ridge$cvm[cv.prof_ridge$lambda == cv.prof_ridge$lambda.min]
 mse_lasso <- cv.prof_lasso$cvm[cv.prof_lasso$lambda == cv.prof_lasso$lambda.min]
@@ -366,14 +375,15 @@ mse_lasso <- cv.prof_lasso$cvm[cv.prof_lasso$lambda == cv.prof_lasso$lambda.min]
 mse_ridge
 mse_lasso
 ```
-En ambos casos es muy grande, pero deberíamos elegir el de Ridge puesto que es un poco menor.
-Dado lo similares que son, es posible hasta que dependa de la semilla (Por error, antes lo he hecho con todo el dataset en lugar del train y me salía con menor error el de Lasso así que es indiferente uno que otro.)
 
-### Métricas
+In both cases it is very large, but we should choose the Ridge one since it is a little smaller. Given how similar they are, it is even possible that it depends on the seed (By mistake, I have done it before with the whole dataset instead of the train and I got the Lasso's one with less error, so it is indifferent one than the other).
+
+### Metrics
 
 ```{r}
 summary(cv.lasso)
 ```
+
 Como vemos, el summary() no nos da esta información por lo que hay que conseguirla de otra forma.
 
 ```{r}
@@ -387,10 +397,12 @@ r2_lasso = 1 - mse_lasso/var(df_prof_y)
 r2_ridge
 r2_lasso
 ```
-Ya que:
+
+Due to:
 
 $$R^{2} = 1 - \frac{\sigma^{2}_{r}}{\sigma^{2}_{y}} = 1 - \frac{MSE}{\sigma^{2}_{y}}$$
-Fijémonos que en cualquiera de los dos casos el poder de predicción es bajo, y estamos teniendo en cuenta también a los casos que están ya entrenados. Si lo hacemos con los que son totalmente nuevos, es decir los *"test"* cases:
+
+Note that in either case the predictive power is low, and we are also taking into account the cases that are already trained. If we do it with those that are totally new, i.e. the *"test "* cases:
 
 ```{r}
 #R^2
@@ -403,18 +415,19 @@ r2_lasso <- cor(y_pred_lasso, df_prof_y_test)^2
 r2_ridge
 r2_lasso
 ```
-Si nos fijamos, son mucho menores los valores.
 
-Merece la pena señalar que la variable **"AssocProf"**, es decir profesor asociado, ha sido totalmente descartada del modelo.
+If we take a closer look, the values are much lower.
 
-También es curioso ver que, si vemos las correlaciones, el sexo parece influir positivamente en caso de ser hombre y tiene más importancia que el resto. Sin embargo, cabe destacar que dado su bajo R^2 la confianza que estos coeficientes nos proporcionan es dudosa, especialmente los que provienen de muestras donde no se podía llegar a conclusiones claras.
+It is worth noting that the variable **"AssocProf"**, i.e. associate professor, has been completely dropped from the model.
 
-## Ejercicio 4
+It is also curious to see that, if we look at the correlations, gender seems to have a positive influence in the case of being male and is more important than the rest. However, it should be noted that given their low R^2 the confidence that these coefficients provide us with is doubtful, especially those coming from samples where no clear conclusions could be drawn.
 
-4 - Estudiar la normalidad de los residuos del modelo resultante. ¿Se detecta algún sesgo?
+## Section 4
 
-Nos pide ver que los residuos son normales. En nuestro caso tomaremos el de Ridge porque hay una ligera diferencia en favor suya.
-Aquí o podemos usar $residuals, pero como sabemos que se trata de la diferencia entre el valor real y el valor de las estimaciones, podemos calcularlo restando ambos vectores:
+4 - Study the normality of the residuals of the resulting model. Is any bias detected?
+
+We are asked to see that the residuals are normal. In our case we will take Ridge's because there is a slight difference in his favor. Here or we can use residuals, but since we know that it is the difference between the actual value and the value of the estimates, we can calculate it by subtracting both vectors:
+
 ```{r}
 # df_prof_y_test    Valores reales
 # y_pred_ridge      Predicciones
@@ -422,9 +435,11 @@ residuals_ridge <- df_prof_y_test - y_pred_ridge
 
 residuals_ridge
 ```
-Para ver si siguen una distribución normal, podemos aplicar directamente un test de hipótesis, concretamente tendremos que **realizar un test de Shapiro-Wilk**. 
 
-Además, vamos a representar los datos antes en un histograma para hacernos una idea de cómo pueden estar distribuidos, ¿Hay que tener en cuenta que cuanto más próximos a cero sean, más fidedignos son respecto a nuestros datos!
+To see if they follow a normal distribution, we can directly apply a hypothesis test, specifically we will have to **perform a Shapiro-Wilk test**.
+
+In addition, we are going to represent the data beforehand in a histogram to get an idea of how they may be distributed, bearing in mind that the closer they are to zero, the more reliable they are with respect to our data!
+
 ```{r}
 df_res_ridge <- data.frame(residuals_ridge)
 ```
@@ -435,40 +450,42 @@ visualization_res_ridge + geom_histogram(aes(y = after_stat(density)),binwidth =
 geom_density(color="red",size=1) + 
 ggtitle("Professor´s salary according to rank.")
 ```
-Podemos tener ciertas dudas porque, como vemos la mayoría de valores están centrados en el cero, pero tiene cierta forma. 
 
-Vamos a comprobarlo con un test de hipótesis:
+We may have some doubts because, as we can see most values are centered on zero, but it has a certain shape.
 
-Hipótesis nula y alternativa:
+Let's check it with a hypothesis test:
 
--   $H_{0}$: Los residuos del modelo lineal con regularización Ridge siguen una distribución normal.
--   $H_{1}$: Los residuos del modelo lineal con regularización Ridge no siguen una distribución normal.
+Null and alternative hypothesis:
 
-Nivel de significación $\alpha$=0.05.
+-   $H_{0}$: The residuals of the linear model with Ridge regularization follow a normal distribution.
+-   $H_{1}$: The residuals of the linear model with Ridge regularization do not follow a normal distribution.
+
+Significance level $\alpha$=0.05.
+
 ```{r}
 shapiro.test(residuals_ridge)
 ```
-Como el $\mathit{p}$-valor es menor que $\alpha$, entonces rechazamos $H_{0}$ y llegamos a que no sigue una distribución normal.
+  
+Since the $\mathit{p}$-value is less than $\alpha$, then we reject $H_{0}$ and conclude that it does not follow a normal distribution.
 
-Además, efectivamente vemos que hay un sesgo porque se aproxima al máximo por la izquierda y por la derecha de la misma forma, cuando vemos que hay una tendencia a residuos positivos mucho mayor.
+Furthermore, we indeed see that there is a bias because it approaches the maximum from the left and from the right in the same way, when we see that there is a tendency to much larger positive residuals.
 
-Esto se traduce en que nuestra recta tiende a dar resultados más bajos que los resultados reales y los salarios esperados que calculemos con nuestro modelo van a ser más pequeños que estos.
+This translates into the fact that our line tends to give lower results than the actual results and the expected wages that we calculate with our model are going to be smaller than these.
 
+## Section 5
 
-## Ejercicio 5
+5 - What conclusions can be drawn from this study and the model implemented? Is the performance of the model correct?
 
-5 - ¿Qué conclusiones se extraen de este estudio y del modelo implementado? ¿Es correcto el rendimiento de este?
+There are several conclusions.
 
-Hay varias conclusiones.
+- The first and most obvious is that a linear regression model does not seem powerful enough for our problem. Our system seems too complex or too nuanced to be "summarized" only in a trend line (Let's not forget that no matter how many regularizations we do, they are polynomials of degree one, i.e. straight lines).
 
-- La primera y más evidente es que un modelo de regresión lineal no parece lo suficientemente potente para nuestro problema. Nuestro sistema parece demasiado complejo o tener demasiados matices como para "resumirlo" sólo en una línea de tendencia (No olvidemos que por muchas regularizaciones que hagamos, son polinomios de grado uno, es decir rectas.)
+- The second is that the model that we choose seems that it is not going to have much importance because it throws very big errors and little reliability as it shows its $R^{2}$, to the point that, developing the exercise with or without *One Hot Encoder* I obtain similar results.
 
-- La segunda es que el modelo que elijamos parece que no va a tener mucha importancia porque arroja errores muy grandes y poca fiabilidad como muestra su $R^{2}$, hasta el punto en que, desarrollando el ejercicio con o sin *One Hot Encoder* obtengo resultados similares.
+- Another important conclusion is that what is evident in many cases or may seem intuitive at first sight is not, because although the central limit theorem is fulfilled in this case, when applying non-parametric tests for the sample we have it tells us that it does not follow a normal distribution.
 
-- Otra conclusión importante es que lo que se ve evidente en muchos casos o puede parecer intuitivo a simple vista no lo es, porque aunque el teorema central del límite se cumple en este caso, al aplicar test no paramétricos para la muestra que tenemos nos dice que no sigue una distribución normal.
+Considerations I would make if I wanted to go deeper:
 
-Consideraciones que haría si se quisiera profundizar:
+- Look for polynomials with which to approximate the model more efficiently, such as degree 2 or 3rd degree polynomials (*cubic splines*).
 
-- Buscar polinomios con los que aproximarse al modelo de forma más eficaz, como por ejemplo polinomios de grado 2 o 3er grado(A estos últimos si no me equivoco sus aproximaciones se les llama *splines cúbicos*)
-
-- Tomar más muestras de los profesores para ver si se pueden aproximar a una distribución normal o verdaderamente existe un sesgo a la derecha (Mediana a la izquierda de la media.)
+- Take more samples of the teachers to see if they can be approximated to a normal distribution or if there really is a bias to the right (median to the left of the mean).
