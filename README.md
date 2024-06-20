@@ -1,4 +1,20 @@
-# Some of my data analyst projects
+# Projects
+
+## [Project: Algorithmic Trading Bots](https://github.com/Seniorveiga/CV/tree/main/Algorythmic%20Trading)
+Ellaborating my own trading bots to operating in the stock market and the crypto market, which are my main interest.
+Right now I´m developing more advanced bots in other areas such as Natural Language Processing. Meanwhile you can check my bot that trades based on **volume changes** and **price changes** in the pair **BTCUSDT**:
+
+* Data has been extracted with the Yahoo! Finance package for Python called [Yfinance](https://pypi.org/project/yfinance/)
+* For the data that is being streamed in real-time, you need to connect to [Binance](https://www.binance.com) and obtain the permissions for the **API keys**.
+* It includes a [Blockchain data anlysis](https://github.com/Seniorveiga/CV/blob/main/Algorythmic%20Trading/2.prep_trading_strategy.ipynb) for this pair where I use to ackages **pandas**, **matplotlib** and **seaborn**, together with other fundamental packages such as **NumPy**, **datetime** and **timedelta**.
+* You can go directly to the robot [here](https://github.com/Seniorveiga/CV/blob/main/Algorythmic%20Trading/3.trading_bot_LongOnlyTrader.ipynb). I will be preparing an updated version for short positions!
+
+## [Project: Manual Trading and extraction to Excel in SP500](https://github.com/Seniorveiga/CV/tree/main/Strategies%20for%20Manual%20Trading%20in%20SP500%20-%20Approximation)
+A brief introduction to the stock market operating system to give traders a spreadsheet to make some operations. It uses some uncommon packages such as the **xlsxwriter** to construct the Excel archives that will be sent to them. It includes:
+
+* An equal weight distribution for the SP500 strategy [to enhance performance en smaller companies](https://github.com/Seniorveiga/CV/blob/main/Strategies%20for%20Manual%20Trading%20in%20SP500%20-%20Approximation/001_equal_weight_S%26P_500.ipynb)
+* A momentum strategy dividing them in different sets, similar to the trading bot strategy above. YOu can have a look [here](https://github.com/Seniorveiga/CV/blob/main/Strategies%20for%20Manual%20Trading%20in%20SP500%20-%20Approximation/002_quantitative_momentum_strategy.ipynb)
+* Lastly, a more conservative but solid strategy that is rooted in the fundamental analysis with KPIs such as the ROI, ROA or the total returns of the companies. [This project](https://github.com/Seniorveiga/CV/blob/main/Strategies%20for%20Manual%20Trading%20in%20SP500%20-%20Approximation/003_quantitative_value_strategy.ipynb) is a bit harder than the others due to missing data and transcryption of data types for the Excel.
 
 ## [Project: Pens and Printers Data Analysis on Sales](https://github.com/Seniorveiga/Pens_and_printers/blob/main/Workspace/pens_and_printers_case_study.ipynb)
 
